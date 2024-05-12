@@ -50,7 +50,7 @@ class _AddPlaceState extends ConsumerState<AddPlace> {
     }
     if(_selectedLocation == null){
       setState(() {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select a location for the palce'), backgroundColor: Colors.white,));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select a location for the Favorite place'), backgroundColor: Colors.white,));
       });
     }
 
@@ -67,7 +67,6 @@ class _AddPlaceState extends ConsumerState<AddPlace> {
     super.dispose();
     titleController.dispose();  //to free up memory
   }
-
 
   @override
   Widget build(BuildContext context) {

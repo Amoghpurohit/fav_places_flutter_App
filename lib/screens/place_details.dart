@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:native_featues_favapp/models/fav_place_item.dart';
+import 'package:native_featues_favapp/screens/maps.dart';
 //import 'package:native_featues_favapp/providers/user_place.dart';
 
 class PlaceDetails extends ConsumerWidget {
@@ -53,9 +54,14 @@ class PlaceDetails extends ConsumerWidget {
                 //     showMapsScreen(locationImagegetter);
                 //   },
                   //child: 
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundImage: NetworkImage(locationImagegetter),      //we could build the image again using lat n lng.
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=>MapsScreen(location: favPlaces.location,)));
+                    },
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundImage: NetworkImage(locationImagegetter),      //we could build the image again using lat n lng.
+                    ),
                   ),
                 //),
                 Text(favPlaces.location.address, textAlign: TextAlign.center,style: const TextStyle(color: Colors.white),)

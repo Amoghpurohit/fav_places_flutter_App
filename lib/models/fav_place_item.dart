@@ -17,7 +17,7 @@ class PlaceLocation{
 
 class FavPlaces{
 
-  FavPlaces({required this.title, required this.image, required this.location}) : id = uuid.v4();
+  FavPlaces({required this.title, required this.image, required this.location, String? id}) : id = id ?? uuid.v4();  //if there is no id specified then we keep the auto-generated id
 
   final String id;
   final String title;

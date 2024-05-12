@@ -26,7 +26,7 @@ class _ImageInputState extends State<ImageInput>{
     }
     setState(() {
       
-      _selectedImage = File(pickedImage.path);  //get access to selectedimage with image value
+      _selectedImage = File(pickedImage.path);  //Converting XFile to File as pickImage is of Type XFile,and get access to selectedimage with image value
     });
 
     widget.onPickImage(_selectedImage!);   //passing the selected image so that the image we get in the parent widget is also the selected image and we can have access to it there

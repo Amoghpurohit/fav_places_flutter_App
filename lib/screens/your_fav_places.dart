@@ -33,6 +33,14 @@ class _YourPlacesState extends ConsumerState<YourPlaces> {
     Navigator.push(context, MaterialPageRoute(builder: (context)=>const AddPlace()));
   }
 
+  late Future _placesFuture;  //futures must be initialized but if we cant at that moment,we can set it to late to tell dart that a value will be provided when the build func is executed and not when the class is instantiated.
+
+  @override
+  void initState() {
+    super.initState();
+    _placesFuture = ref.read(UserPlaceStateNotifierProvider.notifier).loadPlaces(); //initial state when the app is loaded and the state is updated inside the loadplaces func to places that we get from the database
+    //whenever we use ref.read we must make sure that the functions have the updated state inncluded in them.
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +51,7 @@ class _YourPlacesState extends ConsumerState<YourPlaces> {
     Widget content = const Center(child: Text('No Places added yet, Use the + symbol to get started!', style: TextStyle(color: Colors.white),));
 
     if(userPlace.isNotEmpty){
-      content = ListView.builder(
+      content = FutureBuilder(future: _placesFuture, builder: (context, snapshot)=> snapshot.connectionState == ConnectionState.waiting ? const Center(child: CircularProgressIndicator(),) : ListView.builder(
         itemCount: userPlace.length,
         itemBuilder: (context, index)=>Padding(
           padding: const EdgeInsets.all(8.0),
@@ -60,7 +68,7 @@ class _YourPlacesState extends ConsumerState<YourPlaces> {
           ),
         )
           
-      );
+      ));  
     }
 
     return Scaffold(

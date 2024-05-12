@@ -1,8 +1,10 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:native_featues_favapp/models/fav_place_item.dart';
+import 'package:native_featues_favapp/screens/maps.dart';
 
 class LocationInput extends StatefulWidget {
   const LocationInput({super.key, required this.onSelectLocation});
@@ -26,6 +28,28 @@ class _LocationInputState extends State<LocationInput> {
     final lng = pickedLocation!.longitude;
 
     return 'https://maps.googleapis.com/maps/api/staticmap?$lat,$lng&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:S%7C$lat,$lng&key=YOUR_API_KEY';
+  }
+
+  void _savePlace(double latitude, double longitude) async {
+    final url = Uri.parse(
+        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=YOUR_API_KEY');
+
+    final response = await http.get(url);
+
+    final data = json.decode(response.body);
+    final address = data['results'][0]
+        ['formatted_address']; //location in human readable form
+
+    // print(locationData.latitude);
+    // print(locationData.longitude);
+
+    setState(() {
+      pickedLocation =  PlaceLocation(      //update pickedLocation with lat, lgn.. values
+          latitude: latitude, longitude: longitude, address: address); //for preview
+      _isgettingLocation = false;
+    });
+
+    widget.onSelectLocation(pickedLocation!);
   }
 
   void _selectLocation() async {
@@ -64,25 +88,17 @@ class _LocationInputState extends State<LocationInput> {
       return;
     }
 
-    final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/geocode/json?latlng=${locationData.latitude},${locationData.longitude}&key=YOUR_API_KEY');
+    _savePlace(lat, lng);
+    
+  }
 
-    final response = await http.get(url);
+  Future<void> _onSelectOnMap() async {
+    final newpickedLocation = await Navigator.of(context).push<LatLng>(MaterialPageRoute(builder: (context)=>const MapsScreen()));
 
-    final data = json.decode(response.body);
-    final address = data['results'][0]
-        ['formatted_address']; //location in human readable form
-
-    // print(locationData.latitude);
-    // print(locationData.longitude);
-
-    setState(() {
-      pickedLocation =  PlaceLocation(      //update pickedLocation with lat, lgn.. values
-          latitude: lat, longitude: lng, address: address); //for preview
-      _isgettingLocation = false;
-    });
-
-    widget.onSelectLocation(pickedLocation!);
+    if(newpickedLocation == null){  
+      return;
+    }
+    _savePlace(newpickedLocation.latitude, newpickedLocation.longitude);
   }
 
   @override
@@ -118,7 +134,7 @@ class _LocationInputState extends State<LocationInput> {
                 icon: const Icon(Icons.location_on),
                 label: const Text('Get Current Location')),
             TextButton.icon(
-                onPressed: () {},
+                onPressed: _onSelectOnMap,
                 icon: const Icon(Icons.map),
                 label: const Text('Select on Map')),
           ],
